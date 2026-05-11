@@ -13,4 +13,3 @@ SessionLocal = sessionmaker (autocommit = False ,autoflush=False , bind=engine)
 # Bazadagi jadvallar uchun
 Base = declarative_base()
 
-I
