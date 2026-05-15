@@ -1,11 +1,49 @@
+from fastapi import FastAPI
+from fastapi.params import Depends
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from database import SessionLocal
+from models import User
+
+app = FastAPI()
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+class UserSchemas(BaseModel):
+    fullname: str
+    email: str
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+
+@app.post("/createuser")
+
+def createuser(user_data: UserSchemas, db: Session = Depends(get_db)):
+    newuser = User(fullname=user_data.fullname, email=user_data.email)
+    db.add(newuser)
+    db.commit()
+    db.refresh(newuser)
+    return {"Message: ": "Saqlamndi", "user-->": newuser}
+
+
+
+@app.get("getalluser")
+def getalluser(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    return users
+
+
+
+
+
+
+
+# if __name__ == '__main__':
 
